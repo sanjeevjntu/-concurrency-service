@@ -46,7 +46,6 @@ public class UserController {
                 .thenApply(ResponseEntity::ok);
     }
 
-    @Async
     @GetMapping(value = "/usersWithThreads", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<User>> getUsersWithThreads() throws ExecutionException, InterruptedException {
         CompletableFuture<List<User>> task1 = userService.getUsers();
