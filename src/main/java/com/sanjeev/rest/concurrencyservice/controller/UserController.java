@@ -13,11 +13,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,10 +52,27 @@ public class UserController {
         CompletableFuture<List<User>> task3 = userService.getUsers();
         CompletableFuture<List<User>> task4 = userService.getUsers();
 
-        List<User> userList = Stream.of(task1, task2, task3, task4)
-                .map(CompletableFuture::join)
+        CompletableFuture.allOf(task1,task2, task3, task4).join();
+
+        List<User> users1 = task1.get();
+        List<User> users2 = task2.get();
+        List<User> users3 = task3.get();
+        List<User> users4 = task4.get();
+
+        Map<String, List<User>> listMap = new HashMap<>();
+        listMap.put("1", users1);
+        listMap.put("2", users2);
+        listMap.put("3", users3);
+        listMap.put("4", users4);
+
+        List<User> userList = listMap.values().stream()
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
+
+//        List<User> userList = Stream.of(task1, task2, task3, task4)
+//                .map(CompletableFuture::join)
+//                .flatMap(List::stream)
+//                .collect(Collectors.toList());
 
         log.info("Total number of records to client: {}", userList.size());
 
