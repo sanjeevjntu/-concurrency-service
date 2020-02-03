@@ -59,6 +59,8 @@ public class UserController {
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
 
+        log.info("Total number of records to client: {}", userList.size());
+
         return ResponseEntity.ok(userList);
     }
 
